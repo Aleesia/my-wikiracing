@@ -25,9 +25,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: try to run docker
-        run: docker-compose -f docker-compose.yaml up
-
       - name: Verify postgres_db.sql existence
         run: |
           if [ ! -f ./pg_data/postgres_db.sql ]; then
@@ -57,9 +54,3 @@ jobs:
       - name: Run tests
         timeout-minutes: 20
         run: python -m unittest tests.wikiracing_test
-      - name: Get docker container_id
-        run: export CONTAINER_ID=$(docker ps --format='{{.ID}}' --filter name=^/postgres$ --filter name=^/somename$)
-      - name: get filesystem
-        run: docker exec -it ${CONTAINER_ID} /bin/bash
-      - name: Save database 2
-        run: docker execute {CONTAINER_ID} pg_dump -U postgres -d postgres_db > /var/lib/postgresql/data/postgres_db.sql
