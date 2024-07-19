@@ -57,12 +57,15 @@ class WikiRacer:
             self.cursor.execute(q)
         except Exception:
             self.conn.commit()
-            mylist = [str(i) for i in range(1, max_path_length + 1)]
-            columns = " varchar(255), page_".join(mylist)
-            columns = "page_" + columns + " varchar(255)"
-            query = f"CREATE TABLE {self.db_table} ({columns});"
-            self.cursor.execute(query)
-            self.conn.commit()
+            self.create_table()
+
+    def create_table(self):
+        mylist = [str(i) for i in range(1, max_path_length + 1)]
+        columns = " varchar(255), page_".join(mylist)
+        columns = "page_" + columns + " varchar(255)"
+        query = f"CREATE TABLE {self.db_table} ({columns});"
+        self.cursor.execute(query)
+        self.conn.commit()
 
     def find_path(self, start: str, finish: str) -> List[str]:
         self.establish_connection()
@@ -112,20 +115,17 @@ class WikiRacer:
             return [pr for pr in prev]
 
     def add_one_page_to_db(self, path: List[str], next_one: str) -> None:
-        query = "INSERT INTO " + self.db_table + " (" + ", ".join([
+        # query = "INSERT INTO " + self.db_table + " (" + ", ".join([
             f"page_{i}" for i in range(1, self.path_length + 1)])
-        # path.append(next_one)
-        values = "', '".join([remove_apostroph(pg) for pg in path])
-        values = values + "', '" + remove_apostroph(next_one)
-        query = query + r") VALUES ('" + values + "')"
-        try:
-            self.cursor.execute(query)
-            self.conn.commit()
-        except Exception as e:
-            print("ADD ONE TO DB. Exc: ", e)
-            print("q = ", query)
-            print(path)
-            print(next_one)
+        # values = "', '".join([remove_apostroph(pg) for pg in path])
+        # values = values + "', '" + remove_apostroph(next_one)
+        # query = query + r") VALUES ('" + values + "')"
+
+        columns = ", ".join([f"page_{i}" for i in range(1, self.path_length + 1)])
+        values = [remove_apostroph(pg) for pg in path] + [remove_apostroph(next_one)]
+        query = f"INSERT INTO {self.db_table} ({columns}) VALUES ({', '.join(['%s'] * len(values))})"
+        self.cursor.execute(query, values)
+        self.conn.commit()
 
     def get_next_from_db(self, start: str) -> List[str]:
         next_pages = []
@@ -180,7 +180,12 @@ class WikiRacer:
     @limits(calls=rqst_per_min, period=timedelta(seconds=60).total_seconds())
     def get_next_links(self, start: str) -> List[str]:
         url = title_to_link(start)
-        response = requests.get(url)
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+        except requests.RequestException as e:
+            print(f"Request failed: {e}")
+            return []
         soup = BeautifulSoup(response.text, 'html.parser')
         all_links = soup.find(id="bodyContent").find_all("a")
         links = self.parse_page_links(all_links)
