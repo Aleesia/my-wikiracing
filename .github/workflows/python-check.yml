@@ -56,4 +56,4 @@ jobs:
         run: python -m unittest tests.wikiracing_test
 
       - name: Save database
-        run: docker exec postgres pg_dump -U postgres -d postgres_db > /var/lib/postgresql/data/postgres_db.sql
+        run: docker exec postgres pg_dump -U postgres -d postgres_db > ./pg_data/postgres_db.sql
