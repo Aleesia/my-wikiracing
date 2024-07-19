@@ -8,7 +8,7 @@ import time
 
 requests_per_minute = 100
 links_per_page = 200
-max_path_length = 10  # limit the depth of search
+max_path_length = 15  # limit the depth of search
 database_path = "pg_data/postgres_db.sql"
 ukrainian = r'[а-яА-ЯіїєґІЇЄҐ-]'
 english = r'[a-zA-z]'
