@@ -14,4 +14,5 @@ services:
     ports:
       - "5432:5432"
     restart: always
+  dir
   pg_dump -U postgres -d postgres_db > /var/lib/postgresql/data/postgres_db.sql
