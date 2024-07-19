@@ -9,5 +9,10 @@ CREATE TABLE wikipages
     page_7 VARCHAR(255),
     page_8 VARCHAR(255),
     page_9 VARCHAR(255),
-    page_10 VARCHAR(255)
+    page_10 VARCHAR(255),
+    page_11 VARCHAR(255),
+    page_12 VARCHAR(255),
+    page_13 VARCHAR(255),
+    page_14 VARCHAR(255),
+    page_15 VARCHAR(255)
 );
