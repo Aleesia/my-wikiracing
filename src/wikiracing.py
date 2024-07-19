@@ -8,7 +8,7 @@ import time
 
 requests_per_minute = 100
 links_per_page = 200
-max_path_length = 7  # limit the depth of search
+max_path_length = 10  # limit the depth of search
 database_path = "pg_data/postgres_db.sql"
 ukrainian = r'[а-яА-ЯіїєґІЇЄҐ-]'
 english = r'[a-zA-z]'
@@ -66,7 +66,6 @@ class WikiRacer:
         else:
             print("Failed to find path of length <= ", max_path_length)
             result_path = []
-        self.conn.commit()
         self.conn.close()
         return result_path
 
@@ -76,8 +75,9 @@ class WikiRacer:
         return [re.sub('_', ' ', page) for page in pages_path]
 
     def add_pages_to_db(self, page: str, next_pages: List[str]) -> None:
+        path = self.get_path(page)
         for next_one in next_pages:
-            self.add_one_page_to_db(page, next_one)
+            self.add_one_page_to_db(path, next_one)
 
     def get_path(self, page: str) -> List[str]:
         if self.path_length == 2:
@@ -93,22 +93,18 @@ class WikiRacer:
                 query = f"SELECT {my_s} FROM {self.db_table}\
                         WHERE page_{self.path_length - 1} =\
                         '{remove_apostroph(page)}'"
-            try:
-                self.cursor.execute(query)
-                prev = self.cursor.fetchall()
-                prev = prev[0]
-                return [pr for pr in prev]
-            except Exception as e:
-                print("Exception happenned: ", e)
-                print("GET Path. Q = ", query)
+            self.cursor.execute(query)
+            prev = self.cursor.fetchall()
+            prev = prev[0]
+            return [pr for pr in prev]
 
-    def add_one_page_to_db(self, page: str, next_one: str) -> None:
-        curr_pages = self.get_path(page)
+    def add_one_page_to_db(self, path: List[str], next_one: str) -> None:
         query = "INSERT INTO " + self.db_table + " (" + ", ".join([
             f"page_{i}" for i in range(1, self.path_length + 1)])
-        curr_pages.append(next_one)
-        values = "', '".join([remove_apostroph(pg) for pg in curr_pages])
-        query = query + r""") VALUES ('""" + values + """')"""
+        path.append(next_one)
+        print("ADD ONE TO DB. len(path) = ", len(path))
+        values = "', '".join([remove_apostroph(pg) for pg in path])
+        query = query + r") VALUES ('" + values + "')"
         self.cursor.execute(query)
         self.conn.commit()
 
@@ -120,8 +116,9 @@ class WikiRacer:
                 page_{i} = '{remove_apostroph(start)}'"
             self.cursor.execute(query)
             pages = self.cursor.fetchall()
-            n = len(pages)
-            next_pages = next_pages + [pages[j][0] for j in range(n)]
+            for p in pages:
+                if p[0] is not None:
+                    next_pages.append(p)
         return next_pages
 
     def check_page_in_database(self, start: str) -> bool:
