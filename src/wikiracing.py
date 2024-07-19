@@ -53,14 +53,17 @@ class WikiRacer:
             except Exception:
                 time.sleep(1)
         try:
-            self.cursor.execute(f"SELECT * FROM {self.db_table}")
+            q = f"SELECT * FROM {self.db_table}"
+            print("q = ", q)
+            self.cursor.execute(q)
         except Exception:
             mylist = [str(i) for i in range(1, max_path_length + 1)]
             columns = " varchar(255), column_".join(mylist)
             columns = "column_" + columns + " varchar(255)"
-            query = f"CREATE TABLE '{self.db_table}' ({columns});"
+            query = f"CREATE TABLE {self.db_table} ({columns});"
             print("Create Table query: ", query)
             self.cursor.execute(query)
+            self.conn.commit()
 
     def find_path(self, start: str, finish: str) -> List[str]:
         self.establish_connection()
