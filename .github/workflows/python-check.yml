@@ -56,9 +56,7 @@ jobs:
         run: python -m unittest tests.wikiracing_test
       - name: Get docker container_id
         run: export CONTAINER_ID=$(docker ps --format='{{.ID}}' --filter name=^/postgres$ --filter name=^/somename$)
-      - name: Get Docker image info (files)
-        run: docker ps -a | awk '{print $NF}'
-      - name: Save database 1
-        run: docker ps -a
+      - name: get filesystem
+        run: docker exec -it ${CONTAINER_ID} /bin/bash
       - name: Save database 2
-        run: docker execute {CONTAINER_ID} pg_dump -U postgres -d postgres_db > /pg_data/postgres_db.sql --create
+        run: docker execute {CONTAINER_ID} pg_dump -U postgres -d postgres_db > /var/lib/postgresql/data/postgres_db.sql
