@@ -24,14 +24,11 @@ class WikiRacerTest(unittest.TestCase):
 
     def test_5(self):
         path = self.racer.find_path('Дружина (військо)', '6 жовтня')
-        print("found path from Дружина (військо) to 6 жовтня: ")
-        print(path)
-        # self.assertEqual(path, ['Марка (грошова одиниця)', 'Європа', '15 жовтня', '6 жовтня'])
-        self.fail("Implement me")
+        self.assertEqual(path, ['Дружина (військо)', 'Велике князівство Московське', '22 жовтня', '6 жовтня'])
 
     def test_6(self):
         path = self.racer.find_path('Натяжні стелі', 'Мошногір\'я')
-        print("found path from Натяжні стелі to 6 Мошногір\'я: ")
+        print("found path from Натяжні стелі to Мошногір\'я: ")
         print(path)
 
 if __name__ == '__main__':
