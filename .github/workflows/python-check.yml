@@ -57,7 +57,7 @@ jobs:
       - name: Get docker container_id
         run: export CONTAINER_ID=$(docker ps --format='{{.ID}}' --filter name=^/postgres$ --filter name=^/somename$)
       - name: Get Docker image info (files)
-        run: docker exec postgres ls /
+        run: docker ps -a | awk '{print $NF}'
       - name: Save database 1
         run: docker ps -a
       - name: Save database 2
