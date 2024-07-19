@@ -59,8 +59,8 @@ class WikiRacer:
         except Exception:
             self.conn.commit()
             mylist = [str(i) for i in range(1, max_path_length + 1)]
-            columns = " varchar(255), column_".join(mylist)
-            columns = "column_" + columns + " varchar(255)"
+            columns = " varchar(255), page_".join(mylist)
+            columns = "page_" + columns + " varchar(255)"
             query = f"CREATE TABLE {self.db_table} ({columns});"
             print("Create Table query: ", query)
             self.cursor.execute(query)
