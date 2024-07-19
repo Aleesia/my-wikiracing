@@ -58,7 +58,9 @@ class WikiRacer:
             mylist = [str(i) for i in range(1, max_path_length + 1)]
             columns = " varchar(255), column_".join(mylist)
             columns = "column_" + columns + " varchar(255)"
-            self.cursor.execute(f"CREATE TABLE {self.db_table} ({columns});")
+            query = f"CREATE TABLE {self.db_table} ({columns});"
+            print("Create Table query: ", query)
+            self.cursor.execute(query)
 
     def find_path(self, start: str, finish: str) -> List[str]:
         self.establish_connection()
