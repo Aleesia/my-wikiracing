@@ -115,12 +115,6 @@ class WikiRacer:
             return [pr for pr in prev]
 
     def add_one_page_to_db(self, path: List[str], next_one: str) -> None:
-        # query = "INSERT INTO " + self.db_table + " (" + ", ".join([
-        #    f"page_{i}" for i in range(1, self.path_length + 1)])
-        # values = "', '".join([remove_apostroph(pg) for pg in path])
-        # values = values + "', '" + remove_apostroph(next_one)
-        # query = query + r") VALUES ('" + values + "')"
-
         columns = ", ".join([f"page_{i}"
                              for i in range(1, self.path_length + 1)])
         values = [remove_apostroph(pg) for pg in path] + [
