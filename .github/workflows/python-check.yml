@@ -54,10 +54,11 @@ jobs:
       - name: Run tests
         timeout-minutes: 20
         run: python -m unittest tests.wikiracing_test
-
+      - name: Get docker container_id
+        run: export CONTAINER_ID=$(docker ps --format='{{.ID}}' --filter name=^/postgres$ --filter name=^/somename$)
+      - name: Get Docker image info (files)
+        run: docke exec {CONTAINER_ID} ls /
       - name: Save database 1
         run: docker ps -a
-      - name: Save datavase 2
-        run: export CONTAINER_ID=$(docker ps --format='{{.ID}}' --filter name=^/postgres$ --filter name=^/somename$)
-      - name: Save database 3
-        run: docker execute {CONTAINER_ID} pg_dump -U postgres -d postgres_db > /pg_data/postgres_db.sql
+      - name: Save database 2
+        run: docker execute {CONTAINER_ID} pg_dump -U postgres -d postgres_db > /pg_data/postgres_db.sql --create
