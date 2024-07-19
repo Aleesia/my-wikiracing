@@ -125,8 +125,9 @@ class WikiRacer:
                              for i in range(1, self.path_length + 1)])
         values = [remove_apostroph(pg) for pg in path] + [
             remove_apostroph(next_one)]
+        str_values = "', '".join(values)
         query = f"INSERT INTO {self.db_table} ({columns})\
-            VALUES ({', '.join(['%s'] * len(values))})"
+            VALUES ('{str_values}')"
         self.cursor.execute(query, values)
         self.conn.commit()
 
