@@ -105,8 +105,14 @@ class WikiRacer:
         print("ADD ONE TO DB. len(path) = ", len(path))
         values = "', '".join([remove_apostroph(pg) for pg in path])
         query = query + r") VALUES ('" + values + "')"
-        self.cursor.execute(query)
-        self.conn.commit()
+        try:
+            self.cursor.execute(query)
+            self.conn.commit()
+        except Exception as e:
+            print("ADD ONE TO DB. Exc: ", e)
+            print("q = ", query)
+            print(path)
+            print(next_one)
 
     def get_next_from_db(self, start: str) -> List[str]:
         next_pages = []
