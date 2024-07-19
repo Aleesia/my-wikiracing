@@ -54,7 +54,6 @@ class WikiRacer:
                 time.sleep(1)
         try:
             q = f"SELECT * FROM {self.db_table}"
-            print("q = ", q)
             self.cursor.execute(q)
         except Exception:
             self.conn.commit()
@@ -62,7 +61,6 @@ class WikiRacer:
             columns = " varchar(255), page_".join(mylist)
             columns = "page_" + columns + " varchar(255)"
             query = f"CREATE TABLE {self.db_table} ({columns});"
-            print("Create Table query: ", query)
             self.cursor.execute(query)
             self.conn.commit()
 
