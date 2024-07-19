@@ -1,0 +1,56 @@
+name: Python Check
+
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 160
+
+    services:
+      postgres:
+        image: postgres:15.1
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres_db
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Verify postgres_db.sql existence
+        run: |
+          if [ ! -f ./pg_data/postgres_db.sql ]; then
+            echo "Error: postgres_db.sql not found in pg_data directory"
+            exit 1
+          fi
+
+      - name: Load database from dump file
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -d postgres_db -f ./pg_data/postgres_db.sql
+
+      - name: Set Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8
+          pip install flake8-annotations
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Lint with flake8
+        run: flake8 src --max-complexity=10 --ignore=ANN101,ANN102 --count
+
+      - name: Run tests
+        timeout-minutes: 158
+        run: python -m unittest tests.wikiracing_test
