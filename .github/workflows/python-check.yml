@@ -58,5 +58,6 @@ jobs:
       - name: Save database 1
         run: docker ps -a
       - name: Save datavase 2
-        run: |
-          PGPASSWORD=postgres psql -h localhost -U postgres -d postgres_db pg_dump > ./pg_data/postgres_db.sql
+        run: export CONTAINER_ID=$(docker ps --format='{{.ID}}' --filter name=^/postgres$ --filter name=^/somename$)
+      - name: Save database 3
+        run: docker execute {CONTAINER_ID} pg_dump -U postgres -d postgres_db > /var/lib/postgresql/data/postgres_db.sql
