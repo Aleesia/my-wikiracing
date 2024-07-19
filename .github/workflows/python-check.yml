@@ -58,4 +58,5 @@ jobs:
       - name: Save database 1
         run: docker ps -a
       - name: Save datavase 2
-        run: docker exec postgres_db pg_dump -U postgres -d postgres_db > ./pg_data/postgres_db.sql
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -d postgres_db pg_dump > ./pg_data/postgres_db.sql
