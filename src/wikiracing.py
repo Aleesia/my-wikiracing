@@ -57,6 +57,7 @@ class WikiRacer:
             print("q = ", q)
             self.cursor.execute(q)
         except Exception:
+            self.conn.commit()
             mylist = [str(i) for i in range(1, max_path_length + 1)]
             columns = " varchar(255), column_".join(mylist)
             columns = "column_" + columns + " varchar(255)"
