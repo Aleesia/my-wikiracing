@@ -104,7 +104,7 @@ class WikiRacer:
         # path.append(next_one)
         print("ADD ONE TO DB. len(path) = ", len(path))
         values = "', '".join([remove_apostroph(pg) for pg in path])
-        values = values + "', " + next_one
+        values = values + "', '" + next_one
         query = query + r") VALUES ('" + values + "')"
         try:
             self.cursor.execute(query)
