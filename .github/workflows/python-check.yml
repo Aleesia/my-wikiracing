@@ -55,6 +55,7 @@ jobs:
         timeout-minutes: 20
         run: python -m unittest tests.wikiracing_test
 
-      - name: Save database
+      - name: Save database 1
         run: docker ps -a
+      - name: Save datavase 2
         run: docker exec postgres pg_dump -U postgres -d postgres_db > ./pg_data/postgres_db.sql
