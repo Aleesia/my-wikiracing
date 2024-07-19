@@ -59,7 +59,7 @@ class WikiRacer:
             self.conn.commit()
             self.create_table()
 
-    def create_table(self):
+    def create_table(self) -> None:
         mylist = [str(i) for i in range(1, max_path_length + 1)]
         columns = " varchar(255), page_".join(mylist)
         columns = "page_" + columns + " varchar(255)"
@@ -121,9 +121,12 @@ class WikiRacer:
         # values = values + "', '" + remove_apostroph(next_one)
         # query = query + r") VALUES ('" + values + "')"
 
-        columns = ", ".join([f"page_{i}" for i in range(1, self.path_length + 1)])
-        values = [remove_apostroph(pg) for pg in path] + [remove_apostroph(next_one)]
-        query = f"INSERT INTO {self.db_table} ({columns}) VALUES ({', '.join(['%s'] * len(values))})"
+        columns = ", ".join([f"page_{i}"
+                             for i in range(1, self.path_length + 1)])
+        values = [remove_apostroph(pg) for pg in path] + [
+            remove_apostroph(next_one)]
+        query = f"INSERT INTO {self.db_table} ({columns})\
+            VALUES ({', '.join(['%s'] * len(values))})"
         self.cursor.execute(query, values)
         self.conn.commit()
 
