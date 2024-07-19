@@ -102,7 +102,6 @@ class WikiRacer:
         query = "INSERT INTO " + self.db_table + " (" + ", ".join([
             f"page_{i}" for i in range(1, self.path_length + 1)])
         # path.append(next_one)
-        print("ADD ONE TO DB. len(path) = ", len(path))
         values = "', '".join([remove_apostroph(pg) for pg in path])
         values = values + "', '" + remove_apostroph(next_one)
         query = query + r") VALUES ('" + values + "')"
