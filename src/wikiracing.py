@@ -56,8 +56,8 @@ class WikiRacer:
             self.cursor.execute(f"SELECT * FROM {self.db_table}")
         except Exception:
             columns = " varchar(255), ".join([str(i)
-                                                for i in range(1,
-                                                               max_path_length + 1)])
+                                            for i in range(1,
+                                                            max_path_length + 1)])
             columns = "column_" + columns + " varchar(255)"
             self.cursor.execute(f"CREATE TABLE {self.db_table} ({columns});")
 
