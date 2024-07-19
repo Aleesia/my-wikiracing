@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 160
+    timeout-minutes: 20
 
     services:
       postgres:
@@ -52,7 +52,7 @@ jobs:
         run: flake8 src --max-complexity=10 --ignore=ANN101,ANN102 --count
 
       - name: Run tests
-        timeout-minutes: 158
+        timeout-minutes: 20
         run: python -m unittest tests.wikiracing_test
       - name: save database
         run: pg_dump -U postgres -d postgres_db > /var/lib/postgresql/data/postgres_db.sql
