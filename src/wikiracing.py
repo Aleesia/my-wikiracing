@@ -8,7 +8,7 @@ import time
 from datetime import timedelta
 from ratelimit import limits, sleep_and_retry
 
-requests_per_minute = 100
+rqst_per_min = 100
 links_per_page = 200
 max_path_length = 5  # limit the depth of search
 database_path = "pg_data/postgres_db.sql"
@@ -166,7 +166,7 @@ class WikiRacer:
         return next_all_pages
 
     @sleep_and_retry
-    @limits(calls=requests_per_minute, period=timedelta(seconds=60).total_seconds())
+    @limits(calls=rqst_per_min, period=timedelta(seconds=60).total_seconds())
     def get_next_links(self, start: str) -> List[str]:
         url = title_to_link(start)
         response = requests.get(url)
