@@ -52,7 +52,18 @@ class WikiRacer:
                 flag = False
             except Exception:
                 time.sleep(1)
-
+        try:
+            self.cursor.execute(f"SELECT * FROM {self.db_table}")
+        except Exception:
+            columns = "column_" + ' varchar(255), '.join([
+                i for i in range(1, max_path_length + 1)]) + " varchar(255)"
+            self.cursor.execute(f"CREATE TABLE {self.db_table} ({columns});")
+CREATE TABLE table_name (
+    column1 datatype,
+    column2 datatype,
+    column3 datatype,
+   ....
+);
     def find_path(self, start: str, finish: str) -> List[str]:
         self.establish_connection()
         self.finish = re.sub(' ', '_', finish)
