@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 import urllib
 import re
 import time
+from datetime import timedelta
+from ratelimit import limits, sleep_and_retry
 
 requests_per_minute = 100
 links_per_page = 200
@@ -163,6 +165,8 @@ class WikiRacer:
                 break
         return next_all_pages
 
+    @sleep_and_retry
+    @limits(calls=requests_per_minute, period=timedelta(seconds=60).total_seconds())
     def get_next_links(self, start: str) -> List[str]:
         url = title_to_link(start)
         response = requests.get(url)
