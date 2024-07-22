@@ -10,7 +10,6 @@ from ratelimit import limits, sleep_and_retry
 
 rqst_per_min = 100
 links_per_page = 200
-max_path_length = 5  # limit the depth of search
 database_path = "pg_data/postgres_db.sql"
 ukrainian = r'[а-яА-ЯіїєґІЇЄҐ-]'
 english = r'[a-zA-z]'
@@ -73,8 +72,7 @@ class WikiRacer:
         start = re.sub(' ', '_', start)
         self.path_length = 2
         curr_all_pages = self.get_next_pages_one(start)
-        while (self.finish not in curr_all_pages) and (
-                self.path_length <= max_path_length):
+        while self.finish not in curr_all_pages:
             self.path_length += 1
             curr_all_pages = self.get_next_pages(curr_all_pages)
         if self.finish in curr_all_pages:
