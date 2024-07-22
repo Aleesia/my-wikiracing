@@ -59,11 +59,9 @@ class WikiRacer:
             self.create_table()
 
     def create_table(self) -> None:
-        mylist = [str(i) for i in range(1, max_path_length + 1)]
-        columns = " varchar(255), page_".join(mylist)
-        columns = "page_" + columns + " varchar(255)"
-        query = f"CREATE TABLE {self.db_table} ({columns});"
-        self.cursor.execute(query)
+        self.cursor.execute("""
+            CREATE TABLE %s (parent varchar(255),
+            child varchar(255)""", (self.db_table,))
         self.conn.commit()
 
     def find_path(self, start: str, finish: str) -> List[str]:
@@ -75,11 +73,7 @@ class WikiRacer:
         while self.finish not in curr_all_pages:
             self.path_length += 1
             curr_all_pages = self.get_next_pages(curr_all_pages)
-        if self.finish in curr_all_pages:
-            result_path = self.build_path(self.finish)
-        else:
-            print("Failed to find path of length <= ", max_path_length)
-            result_path = []
+        result_path = self.build_path(self.finish)
         self.conn.close()
         return result_path
 
