@@ -54,3 +54,11 @@ jobs:
       - name: Run tests
         timeout-minutes: 20
         run: python -m unittest tests.wikiracing_test
+
+      - name: see Docker contaier
+        run: docker ps
+
+      - name: go to my Docker container
+        run: |
+          docker exec -ti <id-твого-контейнера> /bin/bash/
+          pg_dump -U postgres -d postgres_db > /var/lib/postgresql/data/postgres_db.sql
