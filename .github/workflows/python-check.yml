@@ -60,5 +60,5 @@ jobs:
 
       - name: go to my Docker container
         run: |
-          docker exec -ti <id-твого-контейнера> /bin/bash/
+          docker exec -ti 3e0481984c8a /bin/bash/
           pg_dump -U postgres -d postgres_db > /var/lib/postgresql/data/postgres_db.sql
