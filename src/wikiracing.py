@@ -48,11 +48,11 @@ class WikiRacer:
         self.start = re.sub(' ', '_', start)
         self.path_length = 2
         self.cursor.execute("""
-            SELECT table_schema || '.' || table_name
-            FROM information_schema.tables
-            WHERE table_type = 'BASE TABLE'
-            AND table_schema NOT IN
-            ('pg_catalog', 'information_schema');
+            USE postgres_db
+            GO 
+            SELECT *
+            FROM sys.Tables
+            GO
             """)
         res = self.cursor.fetchall()
         print("================ res = ", res)
