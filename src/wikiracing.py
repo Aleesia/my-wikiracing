@@ -15,6 +15,8 @@ ukrainian = r'[а-яА-ЯіїєґІЇЄҐ-]'
 english = r'[a-zA-z]'
 max_retries = 50
 
+HOST = "ee0ca9806374"
+
 
 def title_to_link(title: str) -> str:
     return "https://uk.wikipedia.org/wiki/" + title
@@ -43,7 +45,7 @@ class WikiRacer:
             counter += 1
             try:
                 self.conn = psycopg2.connect(dbname="postgres_db",
-                                             host="localhost",
+                                             host=HOST,
                                              user="postgres",
                                              password="postgres",
                                              port=5432)
