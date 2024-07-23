@@ -12,7 +12,7 @@ rqst_per_min = 100
 links_per_page = 200
 ukrainian = r'[а-яА-ЯіїєґІЇЄҐ-]'
 english = r'[a-zA-z]'
-max_retries = 50
+max_retries = 10
 
 HOST = "ee0ca9806374"
 
