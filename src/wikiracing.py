@@ -47,7 +47,13 @@ class WikiRacer:
         self.finish = re.sub(' ', '_', finish)
         self.start = re.sub(' ', '_', start)
         self.path_length = 2
-        self.cursor.execute("SELECT * FROM pg_catalog.pg_tables")
+        self.cursor.execute("""
+            SELECT table_schema || '.' || table_name
+            FROM information_schema.tables
+            WHERE table_type = 'BASE TABLE'
+            AND table_schema NOT IN
+            ('pg_catalog', 'information_schema');
+            """)
         res = self.cursor.fetchall()
         print("================ res = ", res)
         curr_all_pages = self.get_next_pages_one(start)
