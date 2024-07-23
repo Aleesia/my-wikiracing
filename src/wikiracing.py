@@ -37,19 +37,19 @@ class WikiRacer:
     def establish_connection(self) -> None:
         flag = True
         counter = 0
-        while flag and counter < max_retries:
-            counter += 1
-            print("counter (connection) = ", counter)
-            try:
-                self.conn = psycopg2.connect(dbname="postgres_db",
-                                             host="alisa-VivoBook",
-                                             user="postgres",
-                                             password="postgres",
-                                             port=5432)
-                self.cursor = self.conn.cursor()
-                flag = False
-            except Exception:
-                time.sleep(1)
+        # while flag and counter < max_retries:
+        #     counter += 1
+        #     print("counter (connection) = ", counter)
+        #     try:
+        self.conn = psycopg2.connect(dbname="postgres_db",
+                                     host="alisa-VivoBook",
+                                     user="postgres",
+                                     password="postgres",
+                                     port=5432)
+        self.cursor = self.conn.cursor()
+        flag = False
+        #     except Exception:
+        #         time.sleep(1)
 
     def find_path(self, start: str, finish: str) -> List[str]:
         self.establish_connection()
