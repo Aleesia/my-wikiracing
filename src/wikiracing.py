@@ -12,7 +12,6 @@ rqst_per_min = 100
 links_per_page = 200
 ukrainian = r'[а-яА-ЯіїєґІЇЄҐ-]'
 english = r'[a-zA-z]'
-max_retries = 10
 
 
 def title_to_link(title: str) -> str:
@@ -35,12 +34,6 @@ class WikiRacer:
         self.db_table = "wikipages"
 
     def establish_connection(self) -> None:
-        # flag = True
-        # counter = 0
-        # while flag and counter < max_retries:
-        #     counter += 1
-        #     print("counter (connection) = ", counter)
-        #     try:
         self.conn = psycopg2.connect(dbname="postgres_db",
                                      # host="172.20.0.2",
                                      host="127.0.0.1",
@@ -48,9 +41,6 @@ class WikiRacer:
                                      password="postgres",
                                      port=5432)
         self.cursor = self.conn.cursor()
-        # flag = False
-        #     except Exception:
-        #         time.sleep(1)
 
     def find_path(self, start: str, finish: str) -> List[str]:
         self.establish_connection()
