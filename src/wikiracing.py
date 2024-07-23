@@ -42,7 +42,7 @@ class WikiRacer:
         #     print("counter (connection) = ", counter)
         #     try:
         self.conn = psycopg2.connect(dbname="postgres_db",
-                                     host="alisa-VivoBook",
+                                     host="127.0.0.1",
                                      user="postgres",
                                      password="postgres",
                                      port=5432)
