@@ -43,6 +43,7 @@ class WikiRacer:
         counter = 0
         while flag and counter < max_retries:
             counter += 1
+            print("counter (connection) = ", counter)
             try:
                 self.conn = psycopg2.connect(dbname="postgres_db",
                                              host=HOST,
@@ -53,18 +54,6 @@ class WikiRacer:
                 flag = False
             except Exception:
                 time.sleep(1)
-        try:
-            q = f"SELECT * FROM {self.db_table}"
-            self.cursor.execute(q)
-        except Exception:
-            self.conn.commit()
-            self.create_table()
-
-    def create_table(self) -> None:
-        self.cursor.execute("""
-            CREATE TABLE %s (parent varchar(255),
-            child varchar(255)""", (self.db_table,))
-        self.conn.commit()
 
     def find_path(self, start: str, finish: str) -> List[str]:
         self.establish_connection()
