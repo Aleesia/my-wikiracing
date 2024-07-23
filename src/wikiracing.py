@@ -10,7 +10,6 @@ from ratelimit import limits, sleep_and_retry
 
 rqst_per_min = 100
 links_per_page = 200
-database_path = "pg_data/postgres_db.sql"
 ukrainian = r'[а-яА-ЯіїєґІЇЄҐ-]'
 english = r'[a-zA-z]'
 max_retries = 50
@@ -58,84 +57,55 @@ class WikiRacer:
     def find_path(self, start: str, finish: str) -> List[str]:
         self.establish_connection()
         self.finish = re.sub(' ', '_', finish)
-        start = re.sub(' ', '_', start)
+        self.start = re.sub(' ', '_', start)
         self.path_length = 2
         curr_all_pages = self.get_next_pages_one(start)
         while self.finish not in curr_all_pages:
             self.path_length += 1
             curr_all_pages = self.get_next_pages(curr_all_pages)
-        result_path = self.build_path(self.finish)
+        result_path = self.get_path(self.finish)
         self.conn.close()
-        return result_path
-
-    def build_path(self, finish: str) -> List[str]:
-        pages_path = self.get_path(finish)
-        pages_path.append(finish)
-        return [re.sub('_', ' ', page) for page in pages_path]
+        return [re.sub('_', ' ', page) for page in result_path]
 
     def add_pages_to_db(self, page: str, next_pages: List[str]) -> None:
-        path = self.get_path(page)
         for next_one in next_pages:
-            self.add_one_page_to_db(path, next_one)
+            if not self.already_in_db(next_one):
+                self.add_one_page_to_db(page, next_one)
+
+    def child_in_db(self, page):
+        self.cursor.execute("SELECT * FROM wikipages WHERE child = %s", (page,))
+        res = self.cursor.fetchall()
+        return len(res) > 0
 
     def get_path(self, page: str) -> List[str]:
         if self.path_length == 2:
-            return [page,]
+            return [self.start, page]
         else:
-            my_s = ', '.join([f"page_{i}" for i in range(
-                1, self.path_length)])
-            if page == self.finish:
-                query = f"SELECT {my_s} FROM {self.db_table}\
-                        WHERE page_{self.path_length} =\
-                        '{remove_apostroph(page)}'"
-            else:
-                query = f"SELECT {my_s} FROM {self.db_table}\
-                        WHERE page_{self.path_length - 1} =\
-                        '{remove_apostroph(page)}'"
-            self.cursor.execute(query)
-            prev = self.cursor.fetchall()
-            prev = prev[0]
-            return [pr for pr in prev]
+            result = [page,]
+            while result[0] != self.start:
+                self.cursor.execute("SELECT parent FROM wikipages WHERE child = %s", (result[0],))
+                prev = self.cursor.fetchall()
+                prev = prev[0]
+                result.insert(0, prev)
+            return result
 
-    def add_one_page_to_db(self, path: List[str], next_one: str) -> None:
-        columns = ", ".join([f"page_{i}"
-                             for i in range(1, self.path_length + 1)])
-        values = [remove_apostroph(pg) for pg in path] + [
-            remove_apostroph(next_one)]
-        str_values = "', '".join(values)
-        query = f"INSERT INTO {self.db_table} ({columns})\
-            VALUES ('{str_values}')"
-        self.cursor.execute(query, values)
+    def add_one_page_to_db(self, page: str, next_one: str) -> None:
+        self.cursor.execute("INSERT INTO wikipages (parent, child) VALUES (%s, %s)", (page, next_one))
         self.conn.commit()
 
     def get_next_from_db(self, start: str) -> List[str]:
         next_pages = []
-        for i in range(1, 5):
-            query = f"SELECT page_{i+1}\
-                FROM {self.db_table} WHERE\
-                page_{i} = '{remove_apostroph(start)}'"
-            self.cursor.execute(query)
-            pages = self.cursor.fetchall()
-            for p in pages:
-                if p[0] is not None:
-                    next_pages.append(p)
-        return next_pages
+        self.cursor.execute("SELECT child FROM wikipages WHERE parent = %s", (start))
+        pages = self.cursor.fetchall()
+        return pages
 
-    def check_page_in_database(self, start: str) -> bool:
-        for i in range(1, 5):
-            query = f"SELECT page_{i+1} FROM {self.db_table}\
-                    WHERE page_{i} = '{remove_apostroph(start)}'"
-            self.cursor.execute(query)
-            result = self.cursor.fetchall()
-            if len(result) > 0:
-                for elem in result:
-                    if elem[0] is None:
-                        return False
-                return True
-        return False
+    def parent_in_database(self, parent: str) -> bool:
+        self.cursor.execute("SELECT * FROM wikipages WHERE parent = %s", (parent,))
+        result = self.cursor.fetchall()
+        return len(result) > 0
 
     def get_next_pages_one(self, start: str) -> List[str]:
-        if self.check_page_in_database(start):
+        if self.parent_in_database(start):
             next_pages = self.get_next_from_db(start)
         else:
             all_links = self.get_next_links(start)
