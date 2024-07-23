@@ -34,7 +34,6 @@ def remove_apostroph(title: str) -> str:
 
 class WikiRacer:
     def __init__(self) -> None:
-        self.db_path = database_path
         self.db_table = "wikipages"
 
     def establish_connection(self) -> None:
@@ -72,8 +71,9 @@ class WikiRacer:
             if not self.already_in_db(next_one):
                 self.add_one_page_to_db(page, next_one)
 
-    def child_in_db(self, page):
-        self.cursor.execute("SELECT * FROM wikipages WHERE child = %s", (page,))
+    def child_in_db(self, page: str) -> bool:
+        self.cursor.execute("SELECT * FROM wikipages\
+            WHERE child = %s", (page,))
         res = self.cursor.fetchall()
         return len(res) > 0
 
@@ -83,24 +83,27 @@ class WikiRacer:
         else:
             result = [page,]
             while result[0] != self.start:
-                self.cursor.execute("SELECT parent FROM wikipages WHERE child = %s", (result[0],))
+                self.cursor.execute("SELECT parent FROM\
+                    wikipages WHERE child = %s", (result[0],))
                 prev = self.cursor.fetchall()
                 prev = prev[0]
                 result.insert(0, prev)
             return result
 
     def add_one_page_to_db(self, page: str, next_one: str) -> None:
-        self.cursor.execute("INSERT INTO wikipages (parent, child) VALUES (%s, %s)", (page, next_one))
+        self.cursor.execute("INSERT INTO wikipages\
+            (parent, child) VALUES (%s, %s)", (page, next_one))
         self.conn.commit()
 
     def get_next_from_db(self, start: str) -> List[str]:
-        next_pages = []
-        self.cursor.execute("SELECT child FROM wikipages WHERE parent = %s", (start))
+        self.cursor.execute("SELECT child FROM wikipages WHERE\
+            parent = %s", (start))
         pages = self.cursor.fetchall()
         return pages
 
     def parent_in_database(self, parent: str) -> bool:
-        self.cursor.execute("SELECT * FROM wikipages WHERE parent = %s", (parent,))
+        self.cursor.execute("SELECT * FROM\
+            wikipages WHERE parent = %s", (parent,))
         result = self.cursor.fetchall()
         return len(result) > 0
 
