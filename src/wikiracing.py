@@ -49,7 +49,7 @@ class WikiRacer:
         self.path_length = 2
         self.cursor.execute("""
             USE postgres_db
-            GO 
+            GO
             SELECT *
             FROM sys.Tables
             GO
