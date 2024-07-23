@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import urllib
 import re
-import time
+# import time
 from datetime import timedelta
 from ratelimit import limits, sleep_and_retry
 
@@ -35,8 +35,8 @@ class WikiRacer:
         self.db_table = "wikipages"
 
     def establish_connection(self) -> None:
-        flag = True
-        counter = 0
+        # flag = True
+        # counter = 0
         # while flag and counter < max_retries:
         #     counter += 1
         #     print("counter (connection) = ", counter)
@@ -47,7 +47,7 @@ class WikiRacer:
                                      password="postgres",
                                      port=5432)
         self.cursor = self.conn.cursor()
-        flag = False
+        # flag = False
         #     except Exception:
         #         time.sleep(1)
 
