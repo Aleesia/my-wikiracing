@@ -4,7 +4,6 @@ import requests
 from bs4 import BeautifulSoup
 import urllib
 import re
-# import time
 from datetime import timedelta
 from ratelimit import limits, sleep_and_retry
 
