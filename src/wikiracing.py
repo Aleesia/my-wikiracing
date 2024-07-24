@@ -99,7 +99,8 @@ class WikiRacer:
     def get_next_pages(self, curr_all_pages: List[str]) -> List[str]:
         next_all_pages = []
         for page in curr_all_pages:
-            print("get_next... Page = ", page, "depth = ", self.path_len)
+            print("get_next. Pg: ", page, "depth: ", self.path_len,
+                  "fin: ", self.finish)
             pages = self.get_next_pages_one(page)
             for p in pages:
                 if p not in next_all_pages:
