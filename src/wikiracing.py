@@ -41,10 +41,10 @@ class WikiRacer:
     def find_path(self, start: str, finish: str) -> List[str]:
         self.finish = re.sub(' ', '_', finish)
         start = re.sub(' ', '_', start)
-        self.path_length = 2
+        self.path_len = 2
         curr_all_pages = self.get_next_pages_one(start)
         while self.finish not in curr_all_pages:
-            self.path_length += 1
+            self.path_len += 1
             curr_all_pages = self.get_next_pages(curr_all_pages)
         result_path = self.get_path(self.finish, start)
         return [re.sub('_', ' ', page) for page in result_path]
@@ -99,7 +99,7 @@ class WikiRacer:
     def get_next_pages(self, curr_all_pages: List[str]) -> List[str]:
         next_all_pages = []
         for page in curr_all_pages:
-            print("Will get_next_pages_one. Page = ", page)
+            print("get_next... Page = ", page, depth = ", self.path_len)
             pages = self.get_next_pages_one(page)
             for p in pages:
                 if p not in next_all_pages:
