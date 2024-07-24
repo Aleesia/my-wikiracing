@@ -40,23 +40,19 @@ class WikiRacer:
                                      port=5432)
         self.cursor = self.conn.cursor()
         print("Connection Is Ready!!!!")
-        self.cursor.execute("SELECT table_name FROM information_schema.tables")
-        for r in self.cursor.fetchall():
-            print("rrrrr ======== ", r)
 
     def find_path(self, start: str, finish: str) -> List[str]:
         self.finish = re.sub(' ', '_', finish)
         self.start = re.sub(' ', '_', start)
         self.path_len = 2
         curr_all_pages = self.get_next_pages_one(self.start)
-        print("=" * 200, "Initial page: ", self.start)
         while self.finish not in curr_all_pages:
             self.path_len += 1
             curr_all_pages = self.get_next_pages(curr_all_pages)
         result_path = self.get_path(self.finish, self.start)
         print("found path from ", self.start, " to ", self.finish, ": ")
         print(', '.join([re.sub('_', ' ', page) for page in result_path]))
-        print(":) " * 200)
+        print(":) " * 50)
         return [re.sub('_', ' ', page) for page in result_path]
 
     def add_pages_to_db(self, page: str, next_pages: List[str]) -> None:
