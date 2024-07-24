@@ -86,7 +86,8 @@ class WikiRacer:
         self.cursor.execute("""
             SELECT * FROM wikipages WHERE child = %s""", (page,))
         res = self.cursor.fetchall()
-        print("child_in_db. res = ", res, "len(res) = ", len(res))
+        if len(res) > 0:
+            print("child_in_db. res = ", res, "len(res) = ", len(res))
         return len(res) > 0
 
     def parent_in_db(self, parent: str) -> bool:
