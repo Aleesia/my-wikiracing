@@ -23,7 +23,7 @@ def link_to_title(link: str) -> str:
 
 
 class WikiRacer:
-    def __init__(self):
+    def __init__(self) -> None:
         self.establish_connection()
         self.cursor.execute("""
             CREATE TABLE wikipages (
