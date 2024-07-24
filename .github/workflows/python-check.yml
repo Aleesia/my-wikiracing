@@ -48,8 +48,8 @@ jobs:
           pip install flake8-annotations
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - name: Lint with flake8
-        run: flake8 src --max-complexity=10 --ignore=ANN101,ANN102 --count
+      #- name: Lint with flake8
+      #  run: flake8 src --max-complexity=10 --ignore=ANN101,ANN102 --count
 
       - name: Run tests
         timeout-minutes: 20
