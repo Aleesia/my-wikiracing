@@ -37,6 +37,10 @@ class WikiRacer:
                                      password="postgres",
                                      port=5432)
         self.cursor = self.conn.cursor()
+        print("Connection Is Ready!!!!")
+        self.cursor.execute("show tables")
+        for r in self.cursor.fetchall():
+            print("rrrrr ======== ", r)
 
     def find_path(self, start: str, finish: str) -> List[str]:
         self.finish = re.sub(' ', '_', finish)
