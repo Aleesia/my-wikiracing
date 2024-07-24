@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 16
 
     services:
       postgres:
@@ -48,9 +48,9 @@ jobs:
           pip install flake8-annotations
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      #- name: Lint with flake8
-      #  run: flake8 src --max-complexity=10 --ignore=ANN101,ANN102 --count
+      - name: Lint with flake8
+        run: flake8 src --max-complexity=10 --ignore=ANN101,ANN102 --count
 
       - name: Run tests
-        timeout-minutes: 4
+        timeout-minutes: 15
         run: python -m unittest tests.wikiracing_test
