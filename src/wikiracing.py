@@ -67,12 +67,6 @@ class WikiRacer:
             if not self.child_in_db(next_one):
                 self.add_one_page_to_db(page, next_one)
 
-    def child_in_db(self, page: str) -> bool:
-        self.cursor.execute("SELECT * FROM wikipages\
-            WHERE child = %s", (page,))
-        res = self.cursor.fetchall()
-        return len(res) > 0
-
     def get_path(self, page: str) -> List[str]:
         if self.path_length == 2:
             return [self.start, page]
@@ -97,14 +91,20 @@ class WikiRacer:
         pages = self.cursor.fetchall()
         return pages
 
-    def parent_in_database(self, parent: str) -> bool:
+    def child_in_db(self, page: str) -> bool:
+        self.cursor.execute("SELECT * FROM wikipages\
+            WHERE child = %s", (page,))
+        res = self.cursor.fetchall()
+        return len(res) > 0
+
+    def parent_in_db(self, parent: str) -> bool:
         self.cursor.execute("SELECT * FROM\
             wikipages WHERE parent = %s", (parent,))
         result = self.cursor.fetchall()
         return len(result) > 0
 
     def get_next_pages_one(self, start: str) -> List[str]:
-        if self.parent_in_database(start):
+        if self.parent_in_db(start):
             next_pages = self.get_next_from_db(start)
         else:
             all_links = self.get_next_links(start)
