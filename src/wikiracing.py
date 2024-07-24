@@ -38,7 +38,7 @@ class WikiRacer:
                                      port=5432)
         self.cursor = self.conn.cursor()
         print("Connection Is Ready!!!!")
-        self.cursor.execute("show tables")
+        self.cursor.execute("SELECT table_name FROM information_schema.tables")
         for r in self.cursor.fetchall():
             print("rrrrr ======== ", r)
 
