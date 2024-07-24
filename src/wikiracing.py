@@ -23,6 +23,13 @@ def link_to_title(link: str) -> str:
 
 
 class WikiRacer:
+    def __init__(self):
+        self.establish_connection()
+        self.cursor.execute("""
+            CREATE TABLE wikipages (
+            parent varchar(255), child varchar(255));""")
+        self.conn.commit()
+
     def establish_connection(self) -> None:
         self.conn = psycopg2.connect(dbname="postgres_db",
                                      # host="172.20.0.2",
@@ -33,19 +40,9 @@ class WikiRacer:
         self.cursor = self.conn.cursor()
 
     def find_path(self, start: str, finish: str) -> List[str]:
-        self.establish_connection()
         self.finish = re.sub(' ', '_', finish)
         start = re.sub(' ', '_', start)
         self.path_length = 2
-        self.cursor.execute("""
-            CREATE TABLE wikipages (
-            parent varchar(255), child varchar(255));""")
-        self.conn.commit()
-        self.cursor.execute("""
-            SELECT * FROM wikipages;""")
-        res = self.cursor.fetchall()
-        for el in res:
-            print("================ res = ", el)
         curr_all_pages = self.get_next_pages_one(start)
         while self.finish not in curr_all_pages:
             self.path_length += 1
