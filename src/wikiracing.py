@@ -64,8 +64,6 @@ class WikiRacer:
                 SELECT parent FROM wikipages
                 WHERE child = %s;""", (result[0],))
             prev = self.cursor.fetchall()[0][0]
-            print("Get Path 1. page = ", page, "start = ", start)
-            print("Get Path 2. prev = ", prev, "result = ", result)
             result.insert(0, prev)
         return result
 
@@ -79,36 +77,29 @@ class WikiRacer:
             self.cursor.execute("""
                 SELECT * FROM wikipages WHERE child = %s;""", (next_one,))
             res = self.cursor.fetchall()
-            # print("INSERT... page = ", page, "next_one = ", next_one, "\n...result = ", res)
 
     def get_next_from_db(self, start: str) -> List[str]:
         self.cursor.execute("""
             SELECT child FROM wikipages WHERE parent = %s;""", (start,))
         pages = self.cursor.fetchall()
-        print("Get_next_from_db. pages = ", pages)
         return pages
 
     def child_in_db(self, page: str) -> bool:
         self.cursor.execute("""
             SELECT * FROM wikipages WHERE child = %s;""", (page,))
         res = self.cursor.fetchall()
-        if len(res) > 0:
-            print("child_in_db. res = ", res, "len(res) = ", len(res))
         return len(res) > 0
 
     def parent_in_db(self, parent: str) -> bool:
         self.cursor.execute("""
             SELECT * FROM wikipages WHERE parent = %s;""", (parent,))
         res = self.cursor.fetchall()
-        if len(res) > 0:
-            print("parent_in_db. res = ", res, "len(res) = ", len(res))
         return len(res) > 0
 
     def page_in_db(self, page: str) -> bool:
         self.cursor.execute("""
             SELECT * FROM wikipages WHERE parent = %s OR child = %s;""", (page, page))
         res = self.cursor.fetchall()
-        print("page_in_db. res = ", res, "len(res) = ", len(res))
         return len(res) > 0
 
     def get_next_pages(self, curr_all_pages: List[str]) -> List[str]:
