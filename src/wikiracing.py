@@ -78,7 +78,7 @@ class WikiRacer:
             SELECT DISTINCT child FROM wikipages
             WHERE parent = %s;""", (start,))
         pages = self.cursor.fetchall()
-        return pages
+        return [p[0] for p in pages]
 
     def child_in_db(self, page: str) -> bool:
         self.cursor.execute("""
