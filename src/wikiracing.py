@@ -63,10 +63,9 @@ class WikiRacer:
             self.cursor.execute("""
                 SELECT parent FROM wikipages
                 WHERE child = %s;""", (result[0],))
-            prev = self.cursor.fetchall()
+            prev = self.cursor.fetchall()[0][0]
             print("Get Path 1. page = ", page, "start = ", start)
             print("Get Path 2. prev = ", prev, "result = ", result)
-            prev = prev[0]
             result.insert(0, prev)
         return result
 
@@ -101,7 +100,8 @@ class WikiRacer:
         self.cursor.execute("""
             SELECT * FROM wikipages WHERE parent = %s;""", (parent,))
         res = self.cursor.fetchall()
-        print("parent_in_db. res = ", res, "len(res) = ", len(res))
+        if len(res) > 0:
+            print("parent_in_db. res = ", res, "len(res) = ", len(res))
         return len(res) > 0
 
     def page_in_db(self, page: str) -> bool:
