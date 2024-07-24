@@ -74,7 +74,7 @@ class WikiRacer:
         return result
 
     def add_one_page_to_db(self, page: str, next_one: str) -> None:
-        if not self.pages_in_db(self.start, page, next_one):
+        if not self.child_in_db(self.next_one):
             self.cursor.execute("""
                 INSERT INTO wikipages (root, parent, child)
                 VALUES (%s, %s, %s);""", (self.start, page, next_one))
@@ -87,24 +87,26 @@ class WikiRacer:
         pages = self.cursor.fetchall()
         return [p[0] for p in pages]
 
-    def pages_in_db(self, root: str, parent: str, child: str) -> bool:
+    def child_in_db(self, child: str) -> bool:
         self.cursor.execute("""
             SELECT * FROM wikipages
-            WHERE root = %s AND parent = %s
-            AND child = %s;""", (root, parent, child))
+            WHERE root = %s
+            AND child = %s;""", (self.start, child))
         res = self.cursor.fetchall()
         return len(res) > 0
 
-    def parent_in_db(self, parent: str) -> bool:
+    def parent_in_curr_db(self, parent: str) -> bool:
         self.cursor.execute("""
-            SELECT * FROM wikipages WHERE parent = %s;""", (parent,))
+            SELECT * FROM wikipages
+            WHERE root = %s
+            AND parent = %s;""", (self.start, parent))
         res = self.cursor.fetchall()
         return len(res) > 0
 
-    def page_in_db(self, page: str) -> bool:
+    def parent_in_all_db(self, page: str) -> bool:
         self.cursor.execute("""
             SELECT * FROM wikipages
-            WHERE parent = %s OR child = %s;""", (page, page))
+            WHERE parent = %s;""", (page,))
         res = self.cursor.fetchall()
         return len(res) > 0
 
@@ -120,7 +122,7 @@ class WikiRacer:
         return next_all_pages
 
     def get_next_pages_one(self, start: str) -> List[str]:
-        if self.parent_in_db(start):
+        if self.parent_in_all_db(start):
             next_pages = self.get_next_from_db(start)
         else:
             all_links = self.get_next_links(start)
