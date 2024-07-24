@@ -22,17 +22,7 @@ def link_to_title(link: str) -> str:
     return link.split('/')[-1]
 
 
-def remove_apostroph(title: str) -> str:
-    if "'" in title:
-        title = title.split("'")
-        title = "''".join(title)
-    return title
-
-
 class WikiRacer:
-    def __init__(self) -> None:
-        self.db_table = "wikipages"
-
     def establish_connection(self) -> None:
         self.conn = psycopg2.connect(dbname="postgres_db",
                                      # host="172.20.0.2",
@@ -64,8 +54,7 @@ class WikiRacer:
 
     def add_pages_to_db(self, page: str, next_pages: List[str]) -> None:
         for next_one in next_pages:
-            if not self.child_in_db(next_one):
-                self.add_one_page_to_db(page, next_one)
+            self.add_one_page_to_db(page, next_one)
 
     def get_path(self, page: str) -> List[str]:
         if self.path_length == 2:
@@ -76,44 +65,38 @@ class WikiRacer:
                 self.cursor.execute("SELECT parent FROM\
                     wikipages WHERE child = %s", (result[0],))
                 prev = self.cursor.fetchall()
+                print("Get Path 1. page = ", page, "start = ", start)
+                print("Get Path 2. prev = ", prev, "result = ", result)
                 prev = prev[0]
                 result.insert(0, prev)
             return result
 
     def add_one_page_to_db(self, page: str, next_one: str) -> None:
-        self.cursor.execute("INSERT INTO wikipages\
-            (parent, child) VALUES (%s, %s)", (page, next_one))
+        self.cursor.execute("""
+            INSERT INTO wikipages (parent, child)
+            VALUES (%s, %s)""", (page, next_one))
         self.conn.commit()
 
     def get_next_from_db(self, start: str) -> List[str]:
-        self.cursor.execute("SELECT child FROM wikipages WHERE\
-            parent = %s", (start))
+        self.cursor.execute("""
+            SELECT child FROM wikipages WHERE parent = %s""", (start,))
         pages = self.cursor.fetchall()
+        print("Get_next_from_db. pages = ", pages)
         return pages
 
     def child_in_db(self, page: str) -> bool:
-        self.cursor.execute("SELECT * FROM wikipages\
-            WHERE child = %s", (page,))
+        self.cursor.execute("""
+            SELECT * FROM wikipages WHERE child = %s""", (page,))
         res = self.cursor.fetchall()
+        print("child_in_db. res = ", res, "len(res) = ", len(res))
         return len(res) > 0
 
     def parent_in_db(self, parent: str) -> bool:
-        self.cursor.execute("SELECT * FROM\
-            wikipages WHERE parent = %s", (parent,))
-        result = self.cursor.fetchall()
-        return len(result) > 0
-
-    def get_next_pages_one(self, start: str) -> List[str]:
-        if self.parent_in_db(start):
-            next_pages = self.get_next_from_db(start)
-        else:
-            all_links = self.get_next_links(start)
-            next_pages = []
-            for link in all_links:
-                curr_page = link_to_title(link)
-                next_pages.append(curr_page)
-            self.add_pages_to_db(start, next_pages)
-        return next_pages
+        self.cursor.execute("""
+            SELECT * FROM wikipages WHERE parent = %s""", (parent,))
+        res = self.cursor.fetchall()
+        print("parent_in_db. res = ", res, "len(res) = ", len(res))
+        return len(res) > 0
 
     def get_next_pages(self, curr_all_pages: List[str]) -> List[str]:
         next_all_pages = []
@@ -125,6 +108,19 @@ class WikiRacer:
             if self.finish in pages:
                 break
         return next_all_pages
+
+    def get_next_pages_one(self, start: str) -> List[str]:
+        if self.parent_in_db(start):
+            next_pages = self.get_next_from_db(start)
+        else:
+            all_links = self.get_next_links(start)
+            next_pages = []
+            for link in all_links:
+                curr_page = link_to_title(link)
+                if not self.child_in_db(curr_page):
+                    next_pages.append(curr_page)
+            self.add_pages_to_db(start, next_pages)
+        return next_pages
 
     @sleep_and_retry
     @limits(calls=rqst_per_min, period=timedelta(seconds=60).total_seconds())
@@ -145,7 +141,7 @@ class WikiRacer:
         selected_links = []
         counter = 0
         i = 0
-        while i < len(all_links) and counter < 200:
+        while i < len(all_links) and counter < links_per_page:
             link = all_links[i]
             if self.is_good_link(link):
                 curr_href = urllib.parse.unquote(link.get("href"))
