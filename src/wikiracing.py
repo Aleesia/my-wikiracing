@@ -48,7 +48,7 @@ class WikiRacer:
         while self.finish not in curr_all_pages:
             self.path_length += 1
             curr_all_pages = self.get_next_pages(curr_all_pages)
-        result_path = self.get_path(self.finish)
+        result_path = self.get_path(self.finish, start)
         self.conn.close()
         return [re.sub('_', ' ', page) for page in result_path]
 
