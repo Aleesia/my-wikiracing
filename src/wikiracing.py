@@ -77,7 +77,7 @@ class WikiRacer:
         self.conn.commit()
         # check
         self.cursor.execute("""
-            SELECT parent FROM wikipages WHERE child = %s;""", (next_one,))
+            SELECT * FROM wikipages WHERE child = %s;""", (next_one,))
         res = self.cursor.fetchall()
         print("INSERT... page = ", page, "next_one = ", next_one, "\n...result = ", res)
 
