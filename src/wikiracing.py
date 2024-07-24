@@ -48,6 +48,9 @@ class WikiRacer:
             self.path_len += 1
             curr_all_pages = self.get_next_pages(curr_all_pages)
         result_path = self.get_path(self.finish, start)
+        print("found path from ", start, " to ", self.finish, ": ")
+        print(', '.join([re.sub('_', ' ', page) for page in result_path]))
+        print(":) " * 200)
         return [re.sub('_', ' ', page) for page in result_path]
 
     def add_pages_to_db(self, page: str, next_pages: List[str]) -> None:
