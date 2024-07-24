@@ -47,13 +47,7 @@ class WikiRacer:
         self.finish = re.sub(' ', '_', finish)
         self.start = re.sub(' ', '_', start)
         self.path_length = 2
-        self.cursor.execute("""
-            USE postgres_db
-            GO
-            SELECT *
-            FROM sys.Tables
-            GO
-            """)
+        self.cursor.execute("""SELECT * FROM wikipages""")
         res = self.cursor.fetchall()
         print("================ res = ", res)
         curr_all_pages = self.get_next_pages_one(start)
