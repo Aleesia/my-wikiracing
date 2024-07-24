@@ -35,7 +35,7 @@ class WikiRacer:
     def find_path(self, start: str, finish: str) -> List[str]:
         self.establish_connection()
         self.finish = re.sub(' ', '_', finish)
-        self.start = re.sub(' ', '_', start)
+        start = re.sub(' ', '_', start)
         self.path_length = 2
         self.cursor.execute("""
             CREATE TABLE wikipages (parent varchar(255), child varchar(255));""")
@@ -56,20 +56,18 @@ class WikiRacer:
         for next_one in next_pages:
             self.add_one_page_to_db(page, next_one)
 
-    def get_path(self, page: str) -> List[str]:
-        if self.path_length == 2:
-            return [self.start, page]
-        else:
-            result = [page,]
-            while result[0] != self.start:
-                self.cursor.execute("SELECT parent FROM\
-                    wikipages WHERE child = %s", (result[0],))
-                prev = self.cursor.fetchall()
-                print("Get Path 1. page = ", page, "start = ", start)
-                print("Get Path 2. prev = ", prev, "result = ", result)
-                prev = prev[0]
-                result.insert(0, prev)
-            return result
+    def get_path(self, page: str, start: str) -> List[str]:
+        result = [page,]
+        while result[0] != start:
+            self.cursor.execute("""
+                SELECT parent FROM wikipages
+                WHERE child = %s""", (result[0],))
+            prev = self.cursor.fetchall()
+            print("Get Path 1. page = ", page, "start = ", start)
+            print("Get Path 2. prev = ", prev, "result = ", result)
+            prev = prev[0]
+            result.insert(0, prev)
+        return result
 
     def add_one_page_to_db(self, page: str, next_one: str) -> None:
         self.cursor.execute("""
