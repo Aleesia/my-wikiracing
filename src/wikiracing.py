@@ -64,7 +64,7 @@ class WikiRacer:
 
     def add_pages_to_db(self, page: str, next_pages: List[str]) -> None:
         for next_one in next_pages:
-            if not self.already_in_db(next_one):
+            if not self.child_in_db(next_one):
                 self.add_one_page_to_db(page, next_one)
 
     def child_in_db(self, page: str) -> bool:
