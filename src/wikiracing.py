@@ -72,7 +72,7 @@ class WikiRacer:
 
     def get_next_from_db(self, start: str) -> List[str]:
         self.cursor.execute("""
-            SELECT child FROM wikipages WHERE parent = %s;""", (start,))
+            SELECT DISTINCT child FROM wikipages WHERE parent = %s;""", (start,))
         pages = self.cursor.fetchall()
         return pages
 
