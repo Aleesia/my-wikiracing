@@ -43,7 +43,7 @@ class WikiRacer:
         start = re.sub(' ', '_', start)
         self.path_len = 2
         curr_all_pages = self.get_next_pages_one(start)
-        print("="*200, "Initial page: ", start)
+        print("=" * 200, "Initial page: ", start)
         while self.finish not in curr_all_pages:
             self.path_len += 1
             curr_all_pages = self.get_next_pages(curr_all_pages)
