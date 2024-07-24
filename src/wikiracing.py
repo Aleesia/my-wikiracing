@@ -70,10 +70,11 @@ class WikiRacer:
             print("GEt Path. result = ", result, "prev = ", prev)
             prev = prev[0][0]
             result.insert(0, prev)
+            print("finish of get_path. result = ", result)
         return result
 
     def add_one_page_to_db(self, page: str, next_one: str) -> None:
-        if not self.page_in_db(next_one):
+        if not self.pages_in_db(root, page, next_one):
             self.cursor.execute("""
                 INSERT INTO wikipages (root, parent, child)
                 VALUES (%s, %s, %s);""", (self.start, page, next_one))
@@ -85,6 +86,14 @@ class WikiRacer:
             WHERE parent = %s;""", (start,))
         pages = self.cursor.fetchall()
         return [p[0] for p in pages]
+
+    def pages_in_db(self, root: str, parent: str, child: str) -> bool:
+        self.cursor.execute("""
+            SELECT * FROM wikipages
+            WHERE root = %s AND parent = %s
+            AND child = %s;""", (root, parent, child))
+        res = self.cursor.fetchall()
+        return len(res) > 0
 
     def parent_in_db(self, parent: str) -> bool:
         self.cursor.execute("""
