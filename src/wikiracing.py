@@ -51,7 +51,8 @@ class WikiRacer:
             SELECT table_schema , table_name FROM
             information_schema.tables""")
         res = self.cursor.fetchall()
-        print("================ res = ", res)
+        for el in res:
+            print("================ res = ", el)
         curr_all_pages = self.get_next_pages_one(start)
         while self.finish not in curr_all_pages:
             self.path_length += 1
