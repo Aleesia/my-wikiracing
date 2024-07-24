@@ -26,7 +26,9 @@ class WikiRacer:
         self.establish_connection()
         self.cursor.execute("""
             CREATE TABLE wikipages (
-            parent varchar(255), child varchar(255));""")
+            root varchar(255),
+            parent varchar(255),
+            child varchar(255));""")
         self.conn.commit()
 
     def establish_connection(self) -> None:
@@ -44,15 +46,15 @@ class WikiRacer:
 
     def find_path(self, start: str, finish: str) -> List[str]:
         self.finish = re.sub(' ', '_', finish)
-        start = re.sub(' ', '_', start)
+        self.start = re.sub(' ', '_', start)
         self.path_len = 2
-        curr_all_pages = self.get_next_pages_one(start)
-        print("=" * 200, "Initial page: ", start)
+        curr_all_pages = self.get_next_pages_one(self.start)
+        print("=" * 200, "Initial page: ", self.start)
         while self.finish not in curr_all_pages:
             self.path_len += 1
             curr_all_pages = self.get_next_pages(curr_all_pages)
-        result_path = self.get_path(self.finish, start)
-        print("found path from ", start, " to ", self.finish, ": ")
+        result_path = self.get_path(self.finish, self.start)
+        print("found path from ", self.start, " to ", self.finish, ": ")
         print(', '.join([re.sub('_', ' ', page) for page in result_path]))
         print(":) " * 200)
         return [re.sub('_', ' ', page) for page in result_path]
@@ -66,7 +68,8 @@ class WikiRacer:
         while result[0] != start:
             self.cursor.execute("""
                 SELECT parent FROM wikipages
-                WHERE child = %s;""", (result[0],))
+                WHERE child = %s
+                AND root = %s;""", (result[0], self.start))
             prev = self.cursor.fetchall()[0][0]
             result.insert(0, prev)
         return result
@@ -74,8 +77,8 @@ class WikiRacer:
     def add_one_page_to_db(self, page: str, next_one: str) -> None:
         if not self.page_in_db(next_one):
             self.cursor.execute("""
-                INSERT INTO wikipages (parent, child)
-                VALUES (%s, %s);""", (page, next_one))
+                INSERT INTO wikipages (root, parent, child)
+                VALUES (%s, %s, %s);""", (self.start, page, next_one))
             self.conn.commit()
 
     def get_next_from_db(self, start: str) -> List[str]:
@@ -84,12 +87,6 @@ class WikiRacer:
             WHERE parent = %s;""", (start,))
         pages = self.cursor.fetchall()
         return [p[0] for p in pages]
-
-    def child_in_db(self, page: str) -> bool:
-        self.cursor.execute("""
-            SELECT * FROM wikipages WHERE child = %s;""", (page,))
-        res = self.cursor.fetchall()
-        return len(res) > 0
 
     def parent_in_db(self, parent: str) -> bool:
         self.cursor.execute("""
