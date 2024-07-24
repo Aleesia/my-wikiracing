@@ -43,9 +43,7 @@ class WikiRacer:
         start = re.sub(' ', '_', start)
         self.path_len = 2
         curr_all_pages = self.get_next_pages_one(start)
-        print("Initial next pages: ")
-        for p in curr_all_pages:
-            print("ini...", start, " : : : ", p)
+        print("="*200, "Initial page: ", start)
         while self.finish not in curr_all_pages:
             self.path_len += 1
             curr_all_pages = self.get_next_pages(curr_all_pages)
@@ -102,8 +100,6 @@ class WikiRacer:
     def get_next_pages(self, curr_all_pages: List[str]) -> List[str]:
         next_all_pages = []
         for page in curr_all_pages:
-            print("get_next. Pg: ", page, "depth: ", self.path_len,
-                  "fin: ", self.finish)
             pages = self.get_next_pages_one(page)
             for p in pages:
                 if p not in next_all_pages:
@@ -115,7 +111,6 @@ class WikiRacer:
     def get_next_pages_one(self, start: str) -> List[str]:
         if self.parent_in_db(start):
             next_pages = self.get_next_from_db(start)
-            print("from db: next = ", next_pages)
         else:
             all_links = self.get_next_links(start)
             next_pages = []
@@ -124,7 +119,6 @@ class WikiRacer:
                 if not self.child_in_db(curr_page):
                     next_pages.append(curr_page)
             self.add_pages_to_db(start, next_pages)
-            print("from links: next = ", next_pages)
         return next_pages
 
     @sleep_and_retry
