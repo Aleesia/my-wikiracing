@@ -48,8 +48,9 @@ class WikiRacer:
         self.start = re.sub(' ', '_', start)
         self.path_length = 2
         self.cursor.execute("""
-            SELECT table_schema , table_name FROM
-            information_schema.tables""")
+            CREATE TABLE wikipages (parent varchar(255), child varchar(255));""")
+        self.conn.commit()
+        self.cursor.execute("""SELECT * FROM wikipages""")
         res = self.cursor.fetchall()
         for el in res:
             print("================ res = ", el)
