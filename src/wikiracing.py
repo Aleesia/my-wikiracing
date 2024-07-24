@@ -116,8 +116,7 @@ class WikiRacer:
             next_pages = []
             for link in all_links:
                 curr_page = link_to_title(link)
-                if not self.child_in_db(curr_page):
-                    next_pages.append(curr_page)
+                next_pages.append(curr_page)
             self.add_pages_to_db(start, next_pages)
         return next_pages
 
