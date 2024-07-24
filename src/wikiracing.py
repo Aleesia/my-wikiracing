@@ -71,7 +71,7 @@ class WikiRacer:
         return result
 
     def add_one_page_to_db(self, page: str, next_one: str) -> None:
-        if not self.child_in_db(next_one):
+        if not self.parent_in_db(next_one):
             self.cursor.execute("""
                 INSERT INTO wikipages (parent, child)
                 VALUES (%s, %s);""", (page, next_one))
@@ -80,7 +80,7 @@ class WikiRacer:
             self.cursor.execute("""
                 SELECT * FROM wikipages WHERE child = %s;""", (next_one,))
             res = self.cursor.fetchall()
-            print("INSERT... page = ", page, "next_one = ", next_one, "\n...result = ", res)
+            # print("INSERT... page = ", page, "next_one = ", next_one, "\n...result = ", res)
 
     def get_next_from_db(self, start: str) -> List[str]:
         self.cursor.execute("""
@@ -102,6 +102,13 @@ class WikiRacer:
             SELECT * FROM wikipages WHERE parent = %s;""", (parent,))
         res = self.cursor.fetchall()
         print("parent_in_db. res = ", res, "len(res) = ", len(res))
+        return len(res) > 0
+
+    def page_in_db(self, page: str) -> bool:
+        self.cursor.execute("""
+            SELECT * FROM wikipages WHERE parent = %s OR child = %s;""", (page, page))
+        res = self.cursor.fetchall()
+        print("page_in_db. res = ", res, "len(res) = ", len(res))
         return len(res) > 0
 
     def get_next_pages(self, curr_all_pages: List[str]) -> List[str]:
