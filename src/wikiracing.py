@@ -74,7 +74,7 @@ class WikiRacer:
         return result
 
     def add_one_page_to_db(self, page: str, next_one: str) -> None:
-        if not self.pages_in_db(root, page, next_one):
+        if not self.pages_in_db(self.start, page, next_one):
             self.cursor.execute("""
                 INSERT INTO wikipages (root, parent, child)
                 VALUES (%s, %s, %s);""", (self.start, page, next_one))
