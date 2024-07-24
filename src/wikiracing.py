@@ -78,7 +78,7 @@ class WikiRacer:
         self.cursor.execute("""
             SELECT parent FROM wikipages WHERE child = %s""", (next_one))
         res = self.cursor.fetchall()
-        print("INSERT... page = ", page, "next_one = ", next_one, "\n...result = ", res))
+        print("INSERT... page = ", page, "next_one = ", next_one, "\n...result = ", res)
 
     def get_next_from_db(self, start: str) -> List[str]:
         self.cursor.execute("""
