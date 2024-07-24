@@ -144,8 +144,9 @@ class WikiRacer:
             link = all_links[i]
             if self.is_good_link(link):
                 curr_href = urllib.parse.unquote(link.get("href"))
-                selected_links.append(curr_href)
-                counter += 1
+                if curr_href not in selected_links:
+                    selected_links.append(curr_href)
+                    counter += 1
             i += 1
         return selected_links
 
