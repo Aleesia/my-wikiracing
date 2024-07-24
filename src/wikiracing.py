@@ -66,7 +66,9 @@ class WikiRacer:
                 SELECT parent FROM wikipages
                 WHERE child = %s
                 AND root = %s;""", (result[0], self.start))
-            prev = self.cursor.fetchall()[0][0]
+            prev = self.cursor.fetchall()
+            print("GEt Path. result = ", result, "prev = ", prev)
+            prev = prev[0][0]
             result.insert(0, prev)
         return result
 
