@@ -40,7 +40,8 @@ class WikiRacer:
         self.cursor.execute("""
             CREATE TABLE wikipages (parent varchar(255), child varchar(255));""")
         self.conn.commit()
-        self.cursor.execute("""SELECT * FROM wikipages""")
+        self.cursor.execute("""
+            SELECT * FROM wikipages;""")
         res = self.cursor.fetchall()
         for el in res:
             print("================ res = ", el)
@@ -61,7 +62,7 @@ class WikiRacer:
         while result[0] != start:
             self.cursor.execute("""
                 SELECT parent FROM wikipages
-                WHERE child = %s""", (result[0],))
+                WHERE child = %s;""", (result[0],))
             prev = self.cursor.fetchall()
             print("Get Path 1. page = ", page, "start = ", start)
             print("Get Path 2. prev = ", prev, "result = ", result)
@@ -72,24 +73,24 @@ class WikiRacer:
     def add_one_page_to_db(self, page: str, next_one: str) -> None:
         self.cursor.execute("""
             INSERT INTO wikipages (parent, child)
-            VALUES (%s, %s)""", (page, next_one))
+            VALUES (%s, %s);""", (page, next_one))
         self.conn.commit()
         # check
         self.cursor.execute("""
-            SELECT parent FROM wikipages WHERE child = %s""", (next_one,))
+            SELECT parent FROM wikipages WHERE child = %s;""", (next_one,))
         res = self.cursor.fetchall()
         print("INSERT... page = ", page, "next_one = ", next_one, "\n...result = ", res)
 
     def get_next_from_db(self, start: str) -> List[str]:
         self.cursor.execute("""
-            SELECT child FROM wikipages WHERE parent = %s""", (start,))
+            SELECT child FROM wikipages WHERE parent = %s;""", (start,))
         pages = self.cursor.fetchall()
         print("Get_next_from_db. pages = ", pages)
         return pages
 
     def child_in_db(self, page: str) -> bool:
         self.cursor.execute("""
-            SELECT * FROM wikipages WHERE child = %s""", (page,))
+            SELECT * FROM wikipages WHERE child = %s;""", (page,))
         res = self.cursor.fetchall()
         if len(res) > 0:
             print("child_in_db. res = ", res, "len(res) = ", len(res))
@@ -97,7 +98,7 @@ class WikiRacer:
 
     def parent_in_db(self, parent: str) -> bool:
         self.cursor.execute("""
-            SELECT * FROM wikipages WHERE parent = %s""", (parent,))
+            SELECT * FROM wikipages WHERE parent = %s;""", (parent,))
         res = self.cursor.fetchall()
         print("parent_in_db. res = ", res, "len(res) = ", len(res))
         return len(res) > 0
