@@ -103,9 +103,6 @@ class WikiRacer:
             pages = self.get_next_pages_one(page)
             for p in pages:
                 if p not in next_all_pages:
-                    print("path_len: ", self.path_len, "start: ",
-                          self.start, "finish: ", self.finish,
-                          "next: ", p)
                     next_all_pages.append(p)
             if self.finish in pages:
                 break
