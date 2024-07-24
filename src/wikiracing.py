@@ -38,7 +38,8 @@ class WikiRacer:
         start = re.sub(' ', '_', start)
         self.path_length = 2
         self.cursor.execute("""
-            CREATE TABLE wikipages (parent varchar(255), child varchar(255));""")
+            CREATE TABLE wikipages (
+            parent varchar(255), child varchar(255));""")
         self.conn.commit()
         self.cursor.execute("""
             SELECT * FROM wikipages;""")
@@ -73,10 +74,6 @@ class WikiRacer:
                 INSERT INTO wikipages (parent, child)
                 VALUES (%s, %s);""", (page, next_one))
             self.conn.commit()
-            # check
-            self.cursor.execute("""
-                SELECT * FROM wikipages WHERE child = %s;""", (next_one,))
-            res = self.cursor.fetchall()
 
     def get_next_from_db(self, start: str) -> List[str]:
         self.cursor.execute("""
@@ -98,7 +95,8 @@ class WikiRacer:
 
     def page_in_db(self, page: str) -> bool:
         self.cursor.execute("""
-            SELECT * FROM wikipages WHERE parent = %s OR child = %s;""", (page, page))
+            SELECT * FROM wikipages
+            WHERE parent = %s OR child = %s;""", (page, page))
         res = self.cursor.fetchall()
         return len(res) > 0
 
