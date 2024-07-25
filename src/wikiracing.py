@@ -39,13 +39,6 @@ class WikiRacer:
                                      port=5432)
         self.cursor = self.conn.cursor()
         print("Connection Is Ready!!!!")
-        try:
-            self.cursor.execute("SELECT * FROM wikipages")
-            res = self.cursor.fetchall()
-            print("fetched data from 'wikipages' table: ", res)
-        except Exception as e:
-            print("Failed to fetch data from 'wikipages' table.")
-            print("Exception happened: ", e)
 
     def find_path(self, start: str, finish: str) -> List[str]:
         self.finish = re.sub(' ', '_', finish)
@@ -56,10 +49,9 @@ class WikiRacer:
             self.path_len += 1
             curr_all_pages = self.get_next_pages(curr_all_pages)
         result_path = self.get_path(self.finish, self.start)
-        print("found path from ", self.start, " to ", self.finish, ": ")
-        print(', '.join([re.sub('_', ' ', page) for page in result_path]))
-        print(":) " * 50)
-        return [re.sub('_', ' ', page) for page in result_path]
+        final_result = [re.sub('_', ' ', page) for page in result_path]
+        print("found path : ", ', '.join(final_result))
+        return final_result
 
     def add_pages_to_db(self, page: str, next_pages: List[str]) -> None:
         for next_one in next_pages:
@@ -72,11 +64,8 @@ class WikiRacer:
                 SELECT parent FROM wikipages
                 WHERE child = %s
                 AND root = %s;""", (result[0], self.start))
-            prev = self.cursor.fetchall()
-            print("GEt Path. result = ", result, "prev = ", prev)
-            prev = prev[0][0]
+            prev = self.cursor.fetchall()[0][0]
             result.insert(0, prev)
-            print("finish of get_path. result = ", result)
         return result
 
     def add_one_page_to_db(self, page: str, next_one: str) -> None:
