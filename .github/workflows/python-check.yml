@@ -8,7 +8,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 160
+    timeout-minutes: 5
 
     services:
       postgres:
@@ -52,5 +52,5 @@ jobs:
         run: flake8 src --max-complexity=10 --ignore=ANN101,ANN102 --count
 
       - name: Run tests
-        timeout-minutes: 158
+        timeout-minutes: 3
         run: python -m unittest tests.wikiracing_test
