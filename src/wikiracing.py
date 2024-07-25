@@ -26,9 +26,9 @@ class WikiRacer:
         self.establish_connection()
         self.cursor.execute("""
             CREATE TABLE IF NOT EXISTS wikipages (
-            root varchar(255),
-            parent varchar(255),
-            child varchar(255));""")
+            root varchar(250),
+            parent varchar(250),
+            child varchar(250));""")
         self.conn.commit()
 
     def establish_connection(self) -> None:
