@@ -25,7 +25,7 @@ class WikiRacer:
     def __init__(self) -> None:
         self.establish_connection()
         self.cursor.execute("""
-            CREATE TABLE wikipages (
+            CREATE TABLE IF NOT EXISTS wikipages (
             root varchar(255),
             parent varchar(255),
             child varchar(255));""")
@@ -33,13 +33,19 @@ class WikiRacer:
 
     def establish_connection(self) -> None:
         self.conn = psycopg2.connect(dbname="postgres_db",
-                                     # host="172.20.0.2",
-                                     host="127.0.0.1",
+                                     host="localhost",
                                      user="postgres",
                                      password="postgres",
                                      port=5432)
         self.cursor = self.conn.cursor()
         print("Connection Is Ready!!!!")
+        try:
+            self.cursor.execute("SELECT * FROM wikipages")
+            res = self.cursor.fetchall()
+            print("fetched data from 'wikipages' table: ", res)
+        except Exception as e:
+            print("Failed to fetch data from 'wikipages' table.")
+            print("Exception happened: ", e)
 
     def find_path(self, start: str, finish: str) -> List[str]:
         self.finish = re.sub(' ', '_', finish)
